@@ -463,7 +463,7 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 
 				const pages = [];
 
-				if (config.kit.i18n.locales.length > 0) {
+				if (config.kit.i18n?.locales.length > 0) {
 					const patterns = config.kit.i18n.locales.map((locale) => ({
 						locale: locale.code,
 						pattern: get_pattern(
