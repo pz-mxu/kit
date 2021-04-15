@@ -7,7 +7,7 @@ import {
 	extname,
 	basename
 } from 'path';
-import { parse, pathToFileURL, resolve, URLSearchParams } from 'url';
+import { parse, pathToFileURL, resolve } from 'url';
 import glob from 'tiny-glob/sync.js';
 import { mkdirp } from '../filesystem/index.js';
 
