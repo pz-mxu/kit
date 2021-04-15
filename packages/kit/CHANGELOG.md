@@ -1,5 +1,11 @@
 # @sveltejs/kit
 
+## 1.0.0-next.76
+
+### Patch Changes
+
+- f870909: Pin vite-plugin-svelte version
+
 ## 1.0.0-next.75
 
 ### Patch Changes
