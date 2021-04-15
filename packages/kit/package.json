@@ -1,6 +1,6 @@
 {
-	"name": "@pz-mxu/svelte-kit",
-	"version": "1.0.0-next.74",
+	"name": "@pz-mxu/sveltekit",
+	"version": "1.0.0-i18n.1",
 	"type": "module",
 	"dependencies": {
 		"@sveltejs/vite-plugin-svelte": "^1.0.0-next.5",
