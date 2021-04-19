@@ -86,7 +86,8 @@ function generate_client_manifest(manifest_data, base) {
 							'})';
 
 					const tuple = [route.pattern, get_indices(route.a), get_indices(route.b)];
-					if (params) tuple.push(params);
+					tuple.push(params);
+					tuple.push(route.id);
 
 					return `// ${route.a[route.a.length - 1]}\n\t\t[${tuple.join(', ')}]`;
 				} else {

@@ -1,5 +1,6 @@
 import { Logger } from './internal';
 import { UserConfig as ViteConfig } from 'vite';
+import { Part } from '../src/core/create_manifest_data';
 
 export type AdapterUtils = {
 	log: Logger;
@@ -58,6 +59,7 @@ export type ValidatedConfig = {
 	extensions: string[];
 	kit: {
 		adapter: Adapter;
+		alternateRoutes: (segments: Part[][]) => Part[][][];
 		amp: boolean;
 		appDir: string;
 		files: {

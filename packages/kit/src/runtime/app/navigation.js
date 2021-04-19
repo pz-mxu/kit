@@ -40,3 +40,31 @@ async function prefetchRoutes_(pathnames) {
 
 	await Promise.all(promises);
 }
+
+/**
+ * @param {RegExp} pattern
+ * @param {string[]} params
+ * @returns {string}
+ */
+function pathFromPattern(pattern, params) {
+	let index = 0;
+	return pattern.source
+		.slice(1, -1)
+		.replace(/\\\//g, '/')
+		.replace(/\(\[\^\/\]\+\?\)/g, () => params[index++])
+		.replace(/\/\?$/, '');
+}
+
+/**
+ * @type {import('$app/navigation').alternates}
+ */
+export function alternates(href) {
+	if (!import.meta.env.SSR) {
+		const hrefRoute = router.routes.find((route) => route[0].test(href));
+		if (!hrefRoute) return null;
+		const [, ...params] = href.match(hrefRoute[0]);
+		const alternates = router.routes.filter((route) => route[4] === hrefRoute[4]);
+		return alternates.map((route) => pathFromPattern(route[0], params));
+	}
+	return null;
+}
