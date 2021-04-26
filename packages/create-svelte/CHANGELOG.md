@@ -1,5 +1,32 @@
 # create-svelte
 
+## 2.0.0-next.60
+
+### Patch Changes
+
+- 1b816b2: Update version of eslint-plugin-svelte3
+- 6f2b4a6: Update welcome message
+- 6f2b4a6: No adapter by default
+
+## 2.0.0-next.59
+
+### Patch Changes
+
+- a2f3f4b: Rename `start` to `preview` in the CLI and package scripts
+
+## 2.0.0-next.58
+
+### Patch Changes
+
+- 2bf4338: Add .gitignore files to new projects
+
+## 2.0.0-next.57
+
+### Patch Changes
+
+- 4645ad5: Remove obsolete vite.ssr config from template
+- 872d734: Hide out-of-view counter from assistive tech
+
 ## 2.0.0-next.56
 
 ### Patch Changes

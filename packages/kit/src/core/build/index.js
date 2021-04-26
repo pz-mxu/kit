@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { rimraf } from '../filesystem/index.js';
 import create_manifest_data from '../../core/create_manifest_data/index.js';
-import { copy_assets, posixify, resolve_entry } from '../utils.js';
+import { copy_assets, get_no_external, posixify, resolve_entry } from '../utils.js';
 import { create_app } from '../../core/create_app/index.js';
 import vite from 'vite';
 import svelte from '@sveltejs/vite-plugin-svelte';
@@ -271,7 +271,7 @@ async function build_server(
 	fs.writeFileSync(
 		app_file,
 		`
-			import { ssr } from '${runtime}';
+			import { respond } from '${runtime}';
 			import root from './generated/root.svelte';
 			import { set_paths } from './runtime/paths.js';
 			import { set_prerendering } from './runtime/env.js';
@@ -283,7 +283,7 @@ async function build_server(
 
 			let options = null;
 
-			// allow paths to be overridden in svelte-kit start
+			// allow paths to be overridden in svelte-kit preview
 			// and in prerendering
 			export function init(settings) {
 				set_paths(settings.paths);
@@ -382,7 +382,7 @@ async function build_server(
 				prerender
 			} = {}) {
 				const host = ${config.kit.host ? s(config.kit.host) : `request.headers[${s(config.kit.hostHeader || 'host')}]`};
-				return ssr({ ...request, host }, options, { prerender });
+				return respond({ ...request, host }, options, { prerender });
 			}
 		`
 			.replace(/^\t{3}/gm, '')
@@ -438,11 +438,9 @@ async function build_server(
 		// @ts-ignore
 		ssr: {
 			...user_config.ssr,
-			noExternal: [
-				'svelte',
-				'@sveltejs/kit',
-				...((user_config.ssr && user_config.ssr.noExternal) || [])
-			]
+			// note to self: this _might_ need to be ['svelte', '@sveltejs/kit', ...get_no_external()]
+			// but I'm honestly not sure. roll with this for now and see if it's ok
+			noExternal: get_no_external(cwd, user_config.ssr && user_config.ssr.noExternal)
 		},
 		optimizeDeps: {
 			entries: []
