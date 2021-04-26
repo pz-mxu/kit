@@ -1,5 +1,6 @@
 import { router } from '../client/singletons.js';
 import { get_base_uri } from '../client/utils.js';
+import { getContext } from 'svelte';
 
 /**
  * @param {string} name
@@ -56,6 +57,14 @@ function pathFromPattern(pattern, params) {
 }
 
 /**
+ * @param {any} value
+ * @return {value is import('types/internal').SSRPage}
+ */
+function isSSRPage(value) {
+	return typeof value === 'object' && value.type === 'page';
+}
+
+/**
  * @type {import('$app/navigation').alternates}
  */
 export function alternates(href) {
@@ -65,6 +74,14 @@ export function alternates(href) {
 		const [, ...params] = href.match(hrefRoute[0]);
 		const alternates = router.routes.filter((route) => route[4] === hrefRoute[4]);
 		return alternates.map((route) => pathFromPattern(route[0], params));
+	} else {
+		console.log(href, 'ssr');
+		/** @type {import('types/internal').SSRRoute[]} */
+		const routes = getContext('__svelte_routes__');
+		const hrefRoute = routes.find((route) => route.pattern.test(href));
+		if (!hrefRoute || !isSSRPage(hrefRoute)) return null;
+		const [, ...params] = href.match(hrefRoute.pattern);
+		const alternates = routes.filter((route) => isSSRPage(route) && route.id === hrefRoute.id);
+		return alternates.map((route) => pathFromPattern(route.pattern, params));
 	}
-	return null;
 }

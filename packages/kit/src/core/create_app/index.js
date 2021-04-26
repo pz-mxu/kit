@@ -150,6 +150,7 @@ function generate_app(manifest_data, base) {
 			// stores
 			export let stores;
 			export let page;
+			export let routes;
 
 			export let components;
 			${levels.map((l) => `export let props_${l} = null;`).join('\n\t\t\t')}
@@ -158,6 +159,8 @@ function generate_app(manifest_data, base) {
 
 			$: stores.page.set(page);
 			afterUpdate(stores.page.notify);
+
+			if (routes) setContext('__svelte_routes__', routes);
 
 			let mounted = false;
 			let navigated = false;

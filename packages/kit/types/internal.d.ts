@@ -76,6 +76,7 @@ export type SSRPagePart = {
 export type GetParams = (match: RegExpExecArray) => Record<string, string>;
 
 export type SSRPage = {
+	id: string;
 	type: 'page';
 	pattern: RegExp;
 	params: GetParams;
