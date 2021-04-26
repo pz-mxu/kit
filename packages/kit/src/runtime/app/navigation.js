@@ -69,13 +69,12 @@ function isSSRPage(value) {
  */
 export function alternates(href) {
 	if (!import.meta.env.SSR) {
-		const hrefRoute = router.routes.find((route) => route[0].test(href));
+		const hrefRoute = router?.routes?.find((route) => route[0].test(href));
 		if (!hrefRoute) return null;
 		const [, ...params] = href.match(hrefRoute[0]);
 		const alternates = router.routes.filter((route) => route[4] === hrefRoute[4]);
 		return alternates.map((route) => pathFromPattern(route[0], params));
 	} else {
-		console.log(href, 'ssr');
 		/** @type {import('types/internal').SSRRoute[]} */
 		const routes = getContext('__svelte_routes__');
 		const hrefRoute = routes.find((route) => route.pattern.test(href));

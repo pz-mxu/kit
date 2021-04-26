@@ -31,6 +31,7 @@ export type Config = {
 	extensions?: string[];
 	kit?: {
 		adapter?: Adapter;
+		alternateRoutes?: (segments: Part[][]) => Part[][][];
 		amp?: boolean;
 		appDir?: string;
 		files?: {
