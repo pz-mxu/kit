@@ -50,11 +50,10 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 	/**
 	 * @param {string} dir
 	 * @param {Part[][]} parent_segments
-	 * @param {string[]} parent_params
 	 * @param {string[]} layout_stack // accumulated $layout.svelte components
 	 * @param {string[]} error_stack // accumulated $error.svelte components
 	 */
-	function walk(dir, parent_segments, parent_params, layout_stack, error_stack) {
+	function walk(dir, parent_segments, layout_stack, error_stack) {
 		/** @type {Item[]} */
 		const items = fs
 			.readdirSync(dir)
@@ -136,9 +135,6 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 				segments.push(item.parts);
 			}
 
-			const params = parent_params.slice();
-			params.push(...item.parts.filter((p) => p.dynamic).map((p) => p.content));
-
 			if (item.is_dir) {
 				const layout_reset = find_layout('$layout.reset', item.file);
 				const layout = find_layout('$layout', item.file);
@@ -155,7 +151,6 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 				walk(
 					path.join(dir, item.basename),
 					segments,
-					params,
 					layout_reset ? [layout_reset] : layout_stack.concat(layout),
 					layout_reset ? [error] : error_stack.concat(error)
 				);
@@ -163,6 +158,10 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 				const alternates = config.kit.alternateRoutes
 					? config.kit.alternateRoutes(segments, item.is_page ? 'page' : 'endpoint')
 					: [segments];
+
+				const params = segments.flatMap((parts) =>
+					parts.filter((p) => p.dynamic).map((p) => p.content)
+				);
 
 				if (item.is_page) {
 					const id = components.length.toString();
@@ -226,7 +225,7 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 
 	components.push(layout, error);
 
-	walk(config.kit.files.routes, [], [], [layout], [error]);
+	walk(config.kit.files.routes, [], [layout], [error]);
 
 	const assets_dir = config.kit.files.assets;
 
