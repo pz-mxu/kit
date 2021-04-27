@@ -11,9 +11,11 @@ const defaultLocale = locales[0];
 /**
  * Create localized routes prefixed with locale
  * @param {Part[][]} segments
+ * @param {'page' | 'endpoint'} type
  * @returns {Part[][][]}
  */
-function localizeRoutes(segments) {
+function localizeRoutes(segments, type) {
+	if (type === 'endpoint') return [segments];
 	return locales.map((locale) =>
 		locale === defaultLocale
 			? segments

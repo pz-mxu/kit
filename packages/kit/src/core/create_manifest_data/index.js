@@ -161,7 +161,7 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 				);
 			} else {
 				const alternates = config.kit.alternateRoutes
-					? config.kit.alternateRoutes(segments)
+					? config.kit.alternateRoutes(segments, item.is_page ? 'page' : 'endpoint')
 					: [segments];
 
 				if (item.is_page) {

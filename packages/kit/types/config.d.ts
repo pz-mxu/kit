@@ -31,7 +31,7 @@ export type Config = {
 	extensions?: string[];
 	kit?: {
 		adapter?: Adapter;
-		alternateRoutes?: (segments: Part[][]) => Part[][][];
+		alternateRoutes?: (segments: Part[][], type: 'page' | 'endpoint') => Part[][][];
 		amp?: boolean;
 		appDir?: string;
 		files?: {
@@ -68,7 +68,7 @@ export type ValidatedConfig = {
 	extensions: string[];
 	kit: {
 		adapter: Adapter;
-		alternateRoutes: (segments: Part[][]) => Part[][][];
+		alternateRoutes: (segments: Part[][], type: 'page' | 'endpoint') => Part[][][];
 		amp: boolean;
 		appDir: string;
 		files: {
