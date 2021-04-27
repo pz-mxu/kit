@@ -159,58 +159,62 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 					layout_reset ? [layout_reset] : layout_stack.concat(layout),
 					layout_reset ? [error] : error_stack.concat(error)
 				);
-			} else if (item.is_page) {
-				const id = components.length.toString();
-				components.push(item.file);
-
+			} else {
 				const alternates = config.kit.alternateRoutes
 					? config.kit.alternateRoutes(segments)
 					: [segments];
 
-				const a = layout_stack.concat(item.file);
-				const b = error_stack;
+				if (item.is_page) {
+					const id = components.length.toString();
+					components.push(item.file);
 
-				alternates.forEach((segments) => {
-					const pattern = get_pattern(segments, true);
+					const a = layout_stack.concat(item.file);
+					const b = error_stack;
 
-					let i = a.length;
-					while (i--) {
-						if (!b[i] && !a[i]) {
-							b.splice(i, 1);
-							a.splice(i, 1);
+					alternates.forEach((segments) => {
+						const pattern = get_pattern(segments, true);
+
+						let i = a.length;
+						while (i--) {
+							if (!b[i] && !a[i]) {
+								b.splice(i, 1);
+								a.splice(i, 1);
+							}
 						}
-					}
 
-					i = b.length;
-					while (i--) {
-						if (b[i]) break;
-					}
+						i = b.length;
+						while (i--) {
+							if (b[i]) break;
+						}
 
-					b.splice(i + 1);
+						b.splice(i + 1);
 
-					const path = segments.every((segment) => segment.length === 1 && !segment[0].dynamic)
-						? `/${segments.map((segment) => segment[0].content).join('/')}`
-						: null;
+						const path = segments.every((segment) => segment.length === 1 && !segment[0].dynamic)
+							? `/${segments.map((segment) => segment[0].content).join('/')}`
+							: null;
 
-					routes.push({
-						id,
-						type: 'page',
-						pattern,
-						params,
-						path,
-						a,
-						b
+						routes.push({
+							id,
+							type: 'page',
+							pattern,
+							params,
+							path,
+							a,
+							b
+						});
 					});
-				});
-			} else {
-				const pattern = get_pattern(segments, !item.route_suffix);
+				} else {
+					alternates.forEach((segments) => {
+						const pattern = get_pattern(segments, !item.route_suffix);
 
-				routes.push({
-					type: 'endpoint',
-					pattern,
-					file: item.file,
-					params
-				});
+						routes.push({
+							type: 'endpoint',
+							pattern,
+							file: item.file,
+							params
+						});
+					});
+				}
 			}
 		});
 	}
