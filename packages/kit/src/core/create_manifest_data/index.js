@@ -159,10 +159,6 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 					? config.kit.alternateRoutes(segments, item.is_page ? 'page' : 'endpoint')
 					: [segments];
 
-				const params = segments.flatMap((parts) =>
-					parts.filter((p) => p.dynamic).map((p) => p.content)
-				);
-
 				if (item.is_page) {
 					const id = components.length.toString();
 					components.push(item.file);
@@ -172,6 +168,9 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 
 					alternates.forEach((segments) => {
 						const pattern = get_pattern(segments, true);
+						const params = segments.flatMap((parts) =>
+							parts.filter((p) => p.dynamic).map((p) => p.content)
+						);
 
 						let i = a.length;
 						while (i--) {
@@ -205,6 +204,9 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 				} else {
 					alternates.forEach((segments) => {
 						const pattern = get_pattern(segments, !item.route_suffix);
+						const params = segments.flatMap((parts) =>
+							parts.filter((p) => p.dynamic).map((p) => p.content)
+						);
 
 						routes.push({
 							type: 'endpoint',
