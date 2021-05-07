@@ -50,11 +50,10 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 	/**
 	 * @param {string} dir
 	 * @param {Part[][]} parent_segments
-	 * @param {string[]} parent_params
 	 * @param {string[]} layout_stack // accumulated $layout.svelte components
 	 * @param {string[]} error_stack // accumulated $error.svelte components
 	 */
-	function walk(dir, parent_segments, parent_params, layout_stack, error_stack) {
+	function walk(dir, parent_segments, layout_stack, error_stack) {
 		/** @type {Item[]} */
 		const items = fs
 			.readdirSync(dir)
@@ -136,9 +135,6 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 				segments.push(item.parts);
 			}
 
-			const params = parent_params.slice();
-			params.push(...item.parts.filter((p) => p.dynamic).map((p) => p.content));
-
 			if (item.is_dir) {
 				const layout_reset = find_layout('$layout.reset', item.file);
 				const layout = find_layout('$layout', item.file);
@@ -155,54 +151,71 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 				walk(
 					path.join(dir, item.basename),
 					segments,
-					params,
 					layout_reset ? [layout_reset] : layout_stack.concat(layout),
 					layout_reset ? [error] : error_stack.concat(error)
 				);
-			} else if (item.is_page) {
-				components.push(item.file);
-
-				const a = layout_stack.concat(item.file);
-				const b = error_stack;
-
-				const pattern = get_pattern(segments, true);
-
-				let i = a.length;
-				while (i--) {
-					if (!b[i] && !a[i]) {
-						b.splice(i, 1);
-						a.splice(i, 1);
-					}
-				}
-
-				i = b.length;
-				while (i--) {
-					if (b[i]) break;
-				}
-
-				b.splice(i + 1);
-
-				const path = segments.every((segment) => segment.length === 1 && !segment[0].dynamic)
-					? `/${segments.map((segment) => segment[0].content).join('/')}`
-					: null;
-
-				routes.push({
-					type: 'page',
-					pattern,
-					params,
-					path,
-					a,
-					b
-				});
 			} else {
-				const pattern = get_pattern(segments, !item.route_suffix);
+				const alternates = config.kit.alternateRoutes
+					? config.kit.alternateRoutes(segments, item.is_page ? 'page' : 'endpoint')
+					: [segments];
 
-				routes.push({
-					type: 'endpoint',
-					pattern,
-					file: item.file,
-					params
-				});
+				if (item.is_page) {
+					const id = components.length.toString();
+					components.push(item.file);
+
+					const a = layout_stack.concat(item.file);
+					const b = error_stack;
+
+					alternates.forEach((segments) => {
+						const pattern = get_pattern(segments, true);
+						const params = segments.flatMap((parts) =>
+							parts.filter((p) => p.dynamic).map((p) => p.content)
+						);
+
+						let i = a.length;
+						while (i--) {
+							if (!b[i] && !a[i]) {
+								b.splice(i, 1);
+								a.splice(i, 1);
+							}
+						}
+
+						i = b.length;
+						while (i--) {
+							if (b[i]) break;
+						}
+
+						b.splice(i + 1);
+
+						const path = segments.every((segment) => segment.length === 1 && !segment[0].dynamic)
+							? `/${segments.map((segment) => segment[0].content).join('/')}`
+							: null;
+
+						routes.push({
+							id,
+							type: 'page',
+							pattern,
+							params,
+							path,
+							a,
+							b
+						});
+					});
+				} else {
+					alternates.forEach((segments) => {
+						const pattern = get_pattern(segments, !item.route_suffix);
+						const params = segments.flatMap((parts) =>
+							parts.filter((p) => p.dynamic).map((p) => p.content)
+						);
+
+						routes.push({
+							type: 'endpoint',
+							pattern,
+							file: item.file,
+							params
+						});
+					});
+				}
 			}
 		});
 	}
@@ -214,7 +227,7 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 
 	components.push(layout, error);
 
-	walk(config.kit.files.routes, [], [], [layout], [error]);
+	walk(config.kit.files.routes, [], [layout], [error]);
 
 	const assets_dir = config.kit.files.assets;
 

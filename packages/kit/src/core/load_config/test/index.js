@@ -19,6 +19,7 @@ test('load default config', async () => {
 		extensions: ['.svelte'],
 		kit: {
 			adapter: null,
+			alternateRoutes: null,
 			amp: false,
 			appDir: '_app',
 			files: {
