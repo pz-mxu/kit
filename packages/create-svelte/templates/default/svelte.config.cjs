@@ -1,5 +1,5 @@
 const sveltePreprocess = require('svelte-preprocess');
-const pkg = require('./package.json');
+const { localizeRoutes } = require('./i18n.config.cjs');
 
 const adapter = process.env.ADAPTER;
 const options = JSON.parse(process.env.OPTIONS || '{}');
@@ -12,7 +12,9 @@ const config = {
 
 	kit: {
 		// hydrate the <div id="svelte"> element in src/app.html
-		target: '#svelte'
+		target: '#svelte',
+
+		alternateRoutes: localizeRoutes
 	}
 };
 
