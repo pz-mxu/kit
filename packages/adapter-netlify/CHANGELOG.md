@@ -1,5 +1,16 @@
 # @sveltejs/adapter-netlify
 
+## 1.0.0-next.14
+
+### Patch Changes
+
+- f59530f: Allow custom redirects for Netlify Adapter
+- 1ba1784: Prevent adapter from splitting query params if they contain commas
+- Updated dependencies [261ee1c]
+- Updated dependencies [ec156c6]
+- Updated dependencies [586785d]
+  - @sveltejs/kit@1.0.0-next.109
+
 ## 1.0.0-next.13
 
 ### Patch Changes
