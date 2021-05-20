@@ -209,7 +209,9 @@ export default function create_manifest_data({ config, output, cwd = process.cwd
 						b.splice(i + 1);
 
 						const path = segments.every((segment) => segment.length === 1 && !segment[0].dynamic)
-							? `/${segments.map((segment) => segment[0].content).join('/')}`
+							? `/${segments.map((segment) => segment[0].content).join('/')}${
+									config.kit.trailingSlash === 'always' && segments.length > 0 ? '/' : ''
+							  }`
 							: null;
 
 						routes.push({
