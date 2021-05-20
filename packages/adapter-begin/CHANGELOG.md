@@ -1,5 +1,11 @@
 # @sveltejs/adapter-begin
 
+## 1.0.0-next.9
+
+### Patch Changes
+
+- 1ba1784: Prevent adapter from splitting query params if they contain commas
+
 ## 1.0.0-next.8
 
 ### Patch Changes
