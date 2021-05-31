@@ -54,6 +54,18 @@ const options = {
 				}
 			},
 
+			alternateRoutes: {
+				type: 'leaf',
+				default: null,
+				validate: (option, keypath) => {
+					if (typeof option !== 'function') {
+						throw new Error(`${keypath} must be a function that processes route segments`);
+					}
+
+					return option;
+				}
+			},
+
 			amp: expect_boolean(false),
 
 			appDir: expect_string('_app', false),
