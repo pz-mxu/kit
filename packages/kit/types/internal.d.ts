@@ -69,6 +69,7 @@ export interface SSRPagePart {
 export type GetParams = (match: RegExpExecArray) => Record<string, string>;
 
 export interface SSRPage {
+	id: string;
 	type: 'page';
 	pattern: RegExp;
 	params: GetParams;
@@ -94,7 +95,7 @@ export interface SSREndpoint {
 
 export type SSRRoute = SSREndpoint | SSRPage;
 
-export type CSRPage = [RegExp, CSRComponentLoader[], CSRComponentLoader[], GetParams?];
+export type CSRPage = [RegExp, CSRComponentLoader[], CSRComponentLoader[], GetParams?, string?];
 
 export type CSREndpoint = [RegExp];
 
@@ -166,6 +167,7 @@ export interface Asset {
 }
 
 export interface PageData {
+	id: string;
 	type: 'page';
 	pattern: RegExp;
 	params: string[];
