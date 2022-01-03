@@ -24,6 +24,7 @@ async function testLoadDefaultConfig(path) {
 		kit: {
 			adapter: null,
 			amp: false,
+			alternateRoutes: null,
 			appDir: '_app',
 			files: {
 				assets: join(cwd, 'static'),

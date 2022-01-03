@@ -1,6 +1,7 @@
 import { UserConfig as ViteConfig } from 'vite';
 import { RecursiveRequired } from './helper';
 import { HttpMethod, Logger, RouteSegment, TrailingSlash } from './internal';
+import { Part } from '../src/core/create_manifest_data';
 
 export interface RouteDefinition {
 	type: 'page' | 'endpoint';
@@ -113,6 +114,7 @@ export interface Config {
 	kit?: {
 		adapter?: Adapter;
 		amp?: boolean;
+		alternateRoutes?: (segments: Part[][], type: 'page' | 'endpoint') => Part[][][];
 		appDir?: string;
 		files?: {
 			assets?: string;

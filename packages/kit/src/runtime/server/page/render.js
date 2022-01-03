@@ -69,7 +69,8 @@ export async function render_response({
 				session
 			},
 			page: { url, params, status, error },
-			components: branch.map(({ node }) => node.module.default)
+			components: branch.map(({ node }) => node.module.default),
+			routes: options.manifest._.routes
 		};
 
 		// TODO remove this for 1.0
