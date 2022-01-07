@@ -92,6 +92,7 @@ export function create_plugin(config, output, cwd, amp) {
 						routes: manifest_data.routes.map((route) => {
 							if (route.type === 'page') {
 								return {
+									id: route.id,
 									type: 'page',
 									pattern: route.pattern,
 									params: get_params(route.params),
