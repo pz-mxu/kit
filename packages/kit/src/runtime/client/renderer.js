@@ -6,6 +6,7 @@ import { normalize } from '../load.js';
 
 /**
  * @typedef {import('types/internal').CSRComponent} CSRComponent
+ * @typedef {import('types/config').RouteOnErrorValue} RouteOnErrorValue
  * @typedef {{ from: URL; to: URL }} Navigating
  */
 
@@ -218,7 +219,7 @@ export class Renderer {
 	 * @param {import('./types').NavigationInfo} info
 	 * @param {string[]} chain
 	 * @param {boolean} no_cache
-	 * @param {{hash?: string, scroll: { x: number, y: number } | null, keepfocus: boolean}} [opts]
+	 * @param {{hash?: string, scroll: { x: number, y: number } | null, keepfocus: boolean, onError: RouteOnErrorValue}} [opts]
 	 */
 	async handle_navigation(info, chain, no_cache, opts) {
 		if (this.started) {
@@ -235,10 +236,11 @@ export class Renderer {
 	 * @param {import('./types').NavigationInfo} info
 	 * @param {string[]} chain
 	 * @param {boolean} no_cache
-	 * @param {{hash?: string, scroll: { x: number, y: number } | null, keepfocus: boolean}} [opts]
+	 * @param {{hash?: string, scroll: { x: number, y: number } | null, keepfocus: boolean, onError: RouteOnErrorValue}} [opts]
 	 */
 	async update(info, chain, no_cache, opts) {
 		const token = (this.token = {});
+		const onError = opts?.onError || 'fail';
 		let navigation_result = await this._get_navigation_result(info, no_cache);
 
 		// abort if user navigated during update
@@ -265,6 +267,14 @@ export class Renderer {
 
 				return;
 			}
+		} else if (navigation_result.props?.page?.status >= 400 && onError !== 'fail') {
+			const { status, error } = navigation_result.props.page;
+			if (onError === 'redirect') {
+				location.href = info.url.href;
+			} else {
+				onError({ status, error, url: info.url });
+			}
+			return;
 		}
 
 		this.updating = true;

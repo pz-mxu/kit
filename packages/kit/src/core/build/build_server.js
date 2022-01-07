@@ -76,7 +76,14 @@ export class App {
 			read,
 			root,
 			service_worker: ${has_service_worker ? "'/service-worker.js'" : 'null'},
-			router: ${s(config.kit.router)},
+			router: {
+				enabled: ${s(config.kit.router.enabled)},
+				onError: ${
+					typeof config.kit.router.onError === 'function'
+						? config.kit.router.onError.toString()
+						: s(config.kit.router.onError)
+				}
+			},
 			ssr: ${s(config.kit.ssr)},
 			target: ${s(config.kit.target)},
 			template,

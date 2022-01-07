@@ -10,6 +10,7 @@ import {
 	ServerResponse
 } from './hooks';
 import { Load } from './page';
+import { RouteOnErrorValue } from './config';
 
 type PageId = string;
 
@@ -140,7 +141,10 @@ export interface SSRRenderOptions {
 	prerender: boolean;
 	read(file: string): Buffer;
 	root: SSRComponent['default'];
-	router: boolean;
+	router: {
+		enabled: boolean;
+		onError: RouteOnErrorValue;
+	};
 	service_worker?: string;
 	ssr: boolean;
 	target: string;
