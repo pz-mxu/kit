@@ -56,7 +56,10 @@ const config = {
 			onError: 'fail'
 		},
 		protocol: null,
-		router: true,
+		router: {
+			enabled: true,
+			onError: 'fail'
+		},
 		serviceWorker: {
 			register: true,
 			files: (filepath) => !/\.DS_STORE/.test(filepath)

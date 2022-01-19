@@ -11,6 +11,7 @@ import {
 } from './hooks';
 import { Load } from './page';
 import { Either, Fallthrough } from './helper';
+import { RouteOnErrorValue } from './config';
 
 type PageId = string;
 
@@ -140,7 +141,10 @@ export interface SSRRenderOptions {
 	prerender: boolean;
 	read(file: string): Buffer;
 	root: SSRComponent['default'];
-	router: boolean;
+	router: {
+		enabled: boolean;
+		onError: RouteOnErrorValue;
+	};
 	service_worker?: string;
 	target: string;
 	template({ head, body, assets }: { head: string; body: string; assets: string }): string;
