@@ -189,7 +189,16 @@ const options = object(
 
 			protocol: string(null),
 
-			router: boolean(true),
+			router: object({
+				enabled: boolean(true),
+				onError: validate('fail', (input, keypath) => {
+					if (typeof input === 'function') return input;
+					if (['redirect', 'fail'].includes(input)) return input;
+					throw new Error(
+						`${keypath} should be either a custom function or one of "redirect" or "fail"`
+					);
+				})
+			}),
 
 			serviceWorker: object({
 				register: boolean(true),

@@ -61,7 +61,7 @@ test('load default config (esm)', async () => {
 				pages: undefined
 			},
 			protocol: null,
-			router: true,
+			router: { enabled: true, onError: 'fail' },
 			ssr: null,
 			target: null,
 			trailingSlash: 'never'
