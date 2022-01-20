@@ -19,6 +19,7 @@ test('fills in defaults', () => {
 		kit: {
 			adapter: null,
 			amp: false,
+			alternateRoutes: null,
 			appDir: '_app',
 			files: {
 				assets: 'static',
@@ -131,6 +132,7 @@ test('fills in partial blanks', () => {
 		kit: {
 			adapter: null,
 			amp: false,
+			alternateRoutes: null,
 			appDir: '_app',
 			files: {
 				assets: 'public',
