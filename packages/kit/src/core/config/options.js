@@ -202,7 +202,14 @@ const options = object(
 				}
 			}),
 
-			router: boolean(true),
+			router: object({
+				enabled: boolean(true),
+				onError: validate('fail', (input, keypath) => {
+					if (typeof input === 'function') return input;
+					if (input === 'fail') return input;
+					throw new Error(`${keypath} should be either a custom function or "fail"`);
+				})
+			}),
 
 			serviceWorker: object({
 				register: boolean(true),
