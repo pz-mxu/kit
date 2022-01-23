@@ -110,6 +110,12 @@ export interface PrerenderErrorHandler {
 
 export type PrerenderOnErrorValue = 'fail' | 'continue' | PrerenderErrorHandler;
 
+export interface RouteErrorHandler {
+	(details: { status: number; error: string; url: URL }): void;
+}
+
+export type RouteOnErrorValue = 'fail' | RouteErrorHandler;
+
 export interface Config {
 	compilerOptions?: CompileOptions;
 	extensions?: string[];
@@ -149,7 +155,10 @@ export interface Config {
 			entries?: string[];
 			onError?: PrerenderOnErrorValue;
 		};
-		router?: boolean;
+		router?: {
+			enabled: boolean;
+			onError?: RouteOnErrorValue;
+		};
 		serviceWorker?: {
 			register?: boolean;
 			files?: (filepath: string) => boolean;
