@@ -4,6 +4,9 @@ import { Fallthrough, RequestHandler } from './endpoint';
 import { Either } from './helper';
 import { ExternalFetch, GetSession, HandleError, InternalHandle, RequestEvent } from './hooks';
 import { Load } from './page';
+import { RouteOnErrorValue } from './config';
+
+type PageId = string;
 
 export interface PrerenderOptions {
 	fallback?: string;
@@ -132,7 +135,10 @@ export interface SSRRenderOptions {
 	prerender: boolean;
 	read(file: string): Buffer;
 	root: SSRComponent['default'];
-	router: boolean;
+	router: {
+		enabled: boolean;
+		onError: RouteOnErrorValue;
+	};
 	service_worker?: string;
 	target: string;
 	template({ head, body, assets }: { head: string; body: string; assets: string }): string;

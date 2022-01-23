@@ -59,7 +59,10 @@ test('fills in defaults', () => {
 				pages: undefined
 			},
 			protocol: undefined,
-			router: true,
+			router: {
+				enabled: true,
+				onError: 'fail'
+			},
 			ssr: null,
 			target: null,
 			trailingSlash: 'never'
@@ -169,7 +172,10 @@ test('fills in partial blanks', () => {
 				pages: undefined
 			},
 			protocol: undefined,
-			router: true,
+			router: {
+				enabled: true,
+				onError: 'fail'
+			},
 			ssr: null,
 			target: null,
 			trailingSlash: 'never'
