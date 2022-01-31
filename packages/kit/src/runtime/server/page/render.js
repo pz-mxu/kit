@@ -80,12 +80,23 @@ export async function render_response({
 
 		const session = writable($session);
 
+		const updated = () => {
+			const { set, update, subscribe } = writable(false);
+			return {
+				set,
+				update,
+				subscribe,
+				check: () => {}
+			};
+		};
+
 		/** @type {Record<string, any>} */
 		const props = {
 			stores: {
 				page: writable(null),
 				navigating: writable(null),
-				session
+				session,
+				updated
 			},
 			page: {
 				url: state.prerender ? create_prerendering_url_proxy(url) : url,
@@ -156,7 +167,10 @@ export async function render_response({
 			session: ${try_serialize($session, (error) => {
 				throw new Error(`Failed to serialize session data: ${error.message}`);
 			})},
-			route: ${!!page_config.router},
+			route: {
+				enabled: ${!!page_config.router},
+				onError: ${s(options.router.onError)}
+			},
 			spa: ${!ssr},
 			trailing_slash: ${s(options.trailing_slash)},
 			hydrate: ${ssr && page_config.hydrate ? `{

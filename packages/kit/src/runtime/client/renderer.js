@@ -6,6 +6,7 @@ import { normalize } from '../load.js';
 
 /**
  * @typedef {import('types/internal').CSRComponent} CSRComponent
+ * @typedef {import('types/config').RouteOnErrorValue} RouteOnErrorValue
  * @typedef {{ from: URL; to: URL }} Navigating
  */
 
@@ -37,6 +38,44 @@ function notifiable_store(value) {
 	}
 
 	return { notify, set, subscribe };
+}
+
+/**
+ * @param {any} value
+ * @param {(set: (new_value: any) => void) => any} fn
+ * @param {number | undefined} interval
+ */
+function checkable_store(value, fn, interval) {
+	const { set, update, subscribe } = writable(value);
+
+	setInterval(() => {
+		fn(set);
+	}, interval);
+
+	return {
+		set,
+		update,
+		subscribe,
+		check: () => fn(set)
+	};
+}
+
+/**
+ * @returns {Promise<boolean>}
+ */
+async function has_version_changed() {
+	if (import.meta.env.DEV) return false;
+
+	const headers = new Headers();
+	headers.append('pragma', 'no-cache');
+	headers.append('cache-control', 'no-cache');
+
+	const current_version = import.meta.env.VITE_APP_VERSION;
+	const new_version = await fetch('_app/version.json', { headers })
+		.then((res) => res.json())
+		.catch(() => undefined);
+
+	return new_version && current_version && new_version !== current_version;
 }
 
 /**
@@ -108,7 +147,17 @@ export class Renderer {
 			url: notifiable_store({}),
 			page: notifiable_store({}),
 			navigating: writable(/** @type {Navigating | null} */ (null)),
-			session: writable(session)
+			session: writable(session),
+			updated: checkable_store(
+				false,
+				(set) => {
+					return has_version_changed().then((changed) => {
+						if (changed) set(true);
+						return changed;
+					});
+				},
+				300000
+			)
 		};
 
 		this.$session = null;
@@ -228,7 +277,7 @@ export class Renderer {
 	 * @param {import('./types').NavigationInfo} info
 	 * @param {string[]} chain
 	 * @param {boolean} no_cache
-	 * @param {{hash?: string, scroll: { x: number, y: number } | null, keepfocus: boolean}} [opts]
+	 * @param {{hash?: string, scroll: { x: number, y: number } | null, keepfocus: boolean, onError: RouteOnErrorValue}} [opts]
 	 */
 	async handle_navigation(info, chain, no_cache, opts) {
 		if (this.started) {
@@ -245,10 +294,11 @@ export class Renderer {
 	 * @param {import('./types').NavigationInfo} info
 	 * @param {string[]} chain
 	 * @param {boolean} no_cache
-	 * @param {{hash?: string, scroll: { x: number, y: number } | null, keepfocus: boolean}} [opts]
+	 * @param {{hash?: string, scroll: { x: number, y: number } | null, keepfocus: boolean, onError: RouteOnErrorValue}} [opts]
 	 */
 	async update(info, chain, no_cache, opts) {
 		const token = (this.token = {});
+		const onError = opts?.onError || 'fail';
 		let navigation_result = await this._get_navigation_result(info, no_cache);
 
 		// abort if user navigated during update
@@ -274,6 +324,12 @@ export class Renderer {
 					location.href = new URL(navigation_result.redirect, location.href).href;
 				}
 
+				return;
+			}
+		} else if (navigation_result.props?.page?.status >= 400 && onError !== 'fail') {
+			const updated = await this.stores.updated.check();
+			if (updated) {
+				location.href = info.url.href;
 				return;
 			}
 		}

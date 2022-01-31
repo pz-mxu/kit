@@ -17,7 +17,10 @@ const get_defaults = (prefix = '') => ({
 		appDir: '_app',
 		browser: {
 			hydrate: true,
-			router: true
+			router: {
+				enabled: true,
+				onError: 'fail'
+			}
 		},
 		csp: {
 			mode: 'auto',
